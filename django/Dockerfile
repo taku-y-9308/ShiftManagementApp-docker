@@ -10,5 +10,6 @@ COPY startup.sh /usr/src/app/startup.sh
 
 RUN pip install --upgrade pip && pip install -r requirements.txt
 RUN mkdir -p /var/run/gunicorn
-RUN chmod +x startup.sh
-CMD ["./startup.sh"]
+RUN chmod -R 755 .
+
+CMD [ "./startup.sh" ]
