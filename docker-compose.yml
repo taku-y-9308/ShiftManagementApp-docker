@@ -1,7 +1,7 @@
 version: '3.7'
 
 services: 
-  gunicorn: 
+  app: 
     build: ./django
     container_name: gunicorn
     volumes: 
@@ -9,7 +9,7 @@ services:
       - gunicorn:/var/run/gunicorn
       - static:/usr/share/nginx/html/static
 
-  nginx: 
+  web: 
     image: nginx:1.21.6
     container_name: nginx
     ports: 
@@ -21,7 +21,7 @@ services:
      - gunicorn:/var/run/gunicorn
      - static:/usr/share/nginx/html/static
 
-  mysql:
+  db:
     build: ./mysql
     command: --default-authentication-plugin=mysql_native_password
     volumes:
