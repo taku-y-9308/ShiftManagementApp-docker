@@ -4,8 +4,6 @@ services:
   gunicorn: 
     build: ./django
     container_name: gunicorn
-    ports:
-      - 3306:3306
     volumes: 
       - ./django/:/usr/src/app/
       - gunicorn:/var/run/gunicorn
