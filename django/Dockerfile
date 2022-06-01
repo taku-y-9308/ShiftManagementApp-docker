@@ -5,9 +5,7 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /usr/src/app
 
-COPY requirements.txt /usr/src/app/requirements.txt
-COPY startup.sh /usr/src/app/startup.sh
-
+COPY app/ /usr/src/app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 RUN mkdir -p /var/run/gunicorn
 RUN chmod -R 755 .

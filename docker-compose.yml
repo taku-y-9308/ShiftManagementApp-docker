@@ -5,19 +5,17 @@ services:
     build: ./django
     container_name: app
     volumes: 
-      - ./django/:/usr/src/app/
       - gunicorn:/var/run/gunicorn
       - static:/usr/share/nginx/html/static
 
   web: 
-    image: nginx:1.21.6
+    build: ./nginx
     container_name: web
     ports: 
      - 80:80
     depends_on: 
       - gunicorn
     volumes: 
-     - ./nginx/gunicorn.conf:/etc/nginx/conf.d/default.conf
      - gunicorn:/var/run/gunicorn
      - static:/usr/share/nginx/html/static
 
