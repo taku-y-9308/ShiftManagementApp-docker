@@ -7,6 +7,10 @@ services:
     volumes: 
       - gunicorn:/var/run/gunicorn
       - static:/usr/share/nginx/html/static
+    environment:
+      - USER=${USER}
+      - PASSWORD=${PASSWORD}
+      - HOST=${HOST}
 
   web: 
     build: ./nginx
@@ -14,17 +18,13 @@ services:
     ports: 
      - 80:80
     depends_on: 
-      - gunicorn
+      - app
     volumes: 
      - gunicorn:/var/run/gunicorn
      - static:/usr/share/nginx/html/static
 
-  db:
-    build: ./mysql
-    container_name: db
-    command: --default-authentication-plugin=mysql_native_password
-    volumes:
-      - db-store:/var/lib/mysql
+
+      
   
 volumes: 
   gunicorn: 
