@@ -87,13 +87,13 @@ DATABASES = {
     'default': {
         'ENGINE': env('ENGINE'),
         'NAME': env('DB_NAME'),
-        'USER': env('USER'),
-        'PASSWORD':env('PASSWORD'),
-        'HOST': env('HOST'),
+        'USER': os.environ.get('MYSQL_USER'),
+        'PASSWORD':os.environ.get('MYSQL_PASSWORD'),
+        'HOST': os.environ.get('HOST'),
         'PORT': env('PORT'),
     }
 }
-
+#os.environ.get('PASSWORD')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

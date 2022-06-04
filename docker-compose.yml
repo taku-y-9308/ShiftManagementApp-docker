@@ -8,8 +8,8 @@ services:
       - gunicorn:/var/run/gunicorn
       - static:/usr/share/nginx/html/static
     environment:
-      - USER=${USER}
-      - PASSWORD=${PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - HOST=${HOST}
 
   web: 
