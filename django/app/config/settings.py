@@ -20,6 +20,8 @@ DEBUG = env.get_value('DEBUG',cast=bool,default=False)
 #ALLOWED_HOSTS = []
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
+CSRF_TRUSTED_ORIGINS= ['https://shiftmanagementapp.com']
+
 #Email settings
 #AWS_ACCESS_KEY_ID = ""
 
