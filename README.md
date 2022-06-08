@@ -1,6 +1,6 @@
 # 概要
 シフト提出、編集、閲覧をスマホから簡単に行えるWebアプリです。  
-http://shiftmanagementapp.com  
+https://shiftmanagementapp.com  
 # 特徴
 - トップページは今月のシフトがひと目で確認できるカレンダー仕様
 ![スクリーンショット 2022-05-26 17 36 11](https://user-images.githubusercontent.com/66234583/170451739-9a803d85-5831-43d0-96c7-d349bc9f2a88.png)  
