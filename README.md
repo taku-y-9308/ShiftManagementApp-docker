@@ -29,9 +29,10 @@ http://shiftmanagementapp.com
 **バックエンド**
 - Python 3.7.10
 - Django 3.2.13
+- Docker 20.10.14
   
 **インフラ**
 - AWS
-    - EC2,RDS,S3,SES,Route53
+    - ECS,ECR,EC2,RDS,ELB,S3,SES,Route53
 
-![Untitled Diagram drawio-3](https://user-images.githubusercontent.com/66234583/167246404-5c10f21c-5aaf-4b73-a249-9cefec10d226.svg)
+![ecs-構成図 drawio](https://user-images.githubusercontent.com/66234583/172550709-00f7a1d1-f5e0-4f85-b663-b4799c36852b.svg)
