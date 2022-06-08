@@ -35,4 +35,4 @@ https://shiftmanagementapp.com
 - AWS
     - ECS,ECR,EC2,RDS,ELB,S3,SES,Route53
 
-![ecs-構成図 drawio](https://user-images.githubusercontent.com/66234583/172550709-00f7a1d1-f5e0-4f85-b663-b4799c36852b.svg)
+![ecs-構成図 drawio-2](https://user-images.githubusercontent.com/66234583/172553329-6ca12ea5-2a6a-450a-9612-cdf7cde2fca4.svg)
