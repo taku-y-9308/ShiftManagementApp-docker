@@ -29,13 +29,20 @@ class Calendartest(TestCase):
             is_edit_mode=is_edit_mode
             )
 
-        result_login = self.client.login(email=email,password=password)
-        print(f"result_login:{result_login}")
+        self.client.login(email=email,password=password)
 
-    def test_indexpage_access(self):
+    def test_response_code_get_indexpage(self):
         """homeページの表示したときのレスポンスコードが200かどうか確認"""
         response = self.client.get(reverse('ShiftManagementApp:index'))
         self.assertEqual(response.status_code,200)
     
-    def test_post_calendar(self):
-        pass
+    def test_response_code_post_calendar(self):
+        """シフト提出したときのレスポンスコードが200かどうか確認"""
+        post_data = {
+            "id" : 1,
+            "date":"2022-07-01",
+            "start":"12:00",
+            "end":"18:00",
+        }
+        response = self.client.post(reverse('ShiftManagementApp:SubmitShift-Ajax'),post_data,content_type='application/json')
+        self.assertEqual(response.status_code,200)
