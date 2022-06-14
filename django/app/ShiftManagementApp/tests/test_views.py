@@ -2,7 +2,7 @@ from urllib import response
 from django.test import TestCase
 from django.urls import reverse, resolve
 from ShiftManagementApp.views import home
-from ShiftManagementApp.models import User
+from ShiftManagementApp.models import User,UserManager
 
 class LoginpageTest(TestCase):
     def test_get_status_code_index(self):
@@ -20,7 +20,14 @@ class Calendartest(TestCase):
         password = 'testpassword'
         is_edit_mode = True
 
-        self.user = User.objects.create_user(username,email,password=password)
+        self.user = User.objects.create_user(
+            username,
+            email,
+            password,
+            shop_id=shop_id,
+            default_position=default_position,
+            is_edit_mode=is_edit_mode
+            )
 
         result_login = self.client.login(email=email,password=password)
         print(f"result_login:{result_login}")
