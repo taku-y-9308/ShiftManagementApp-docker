@@ -1,8 +1,10 @@
+import datetime
+from lib2to3.pgen2.tokenize import tokenize
 from urllib import response
 from django.test import TestCase
 from django.urls import reverse, resolve
 from ShiftManagementApp.views import home
-from ShiftManagementApp.models import User,UserManager
+from ShiftManagementApp.models import User,UserManager,Shift
 
 class LoginpageTest(TestCase):
     def test_get_status_code_index(self):
@@ -46,3 +48,19 @@ class Calendartest(TestCase):
         }
         response = self.client.post(reverse('ShiftManagementApp:SubmitShift-Ajax'),post_data,content_type='application/json')
         self.assertEqual(response.status_code,200)
+    
+    def test_check_database_post_calendar(self):
+        """DBにデータを送信して正常に格納されているか確認"""
+        post_data = {
+            "id" : 1,
+            "date":"2022-07-01",
+            "start":"12:00",
+            "end":"18:00",
+        }
+        response = self.client.post(reverse('ShiftManagementApp:SubmitShift-Ajax'),post_data,content_type='application/json')
+        shift = Shift.objects.all()
+        
+        self.assertEqual(shift[0].date,datetime.date(2022, 7, 1))
+        tz = datetime.timezone(datetime.timedelta(hours=0))
+        self.assertEqual(shift[0].begin,datetime.datetime(2022, 7, 1, 3, 0, 0,tzinfo=tz))
+        self.assertEqual(shift[0].finish,datetime.datetime(2022, 7, 1, 9, 0, 0,tzinfo=tz))
