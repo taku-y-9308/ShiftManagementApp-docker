@@ -29,9 +29,9 @@ https://shiftmanagementapp.com
 **バックエンド**
 - Python 3.7.10
 - Django 3.2.13
-- Docker 20.10.14
   
 **インフラ**
+- Docker 20.10.14
 - AWS
     - ECS,ECR,EC2,RDS,ELB,S3,SES,Route53
 
