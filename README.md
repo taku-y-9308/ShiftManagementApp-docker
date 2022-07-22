@@ -14,7 +14,7 @@ https://shiftmanagementapp.com
 - 管理者はタイムラインクリックすることでシフト編集が可能
 ![スクリーンショット 2022-05-26 17 40 03](https://user-images.githubusercontent.com/66234583/170452082-461ce166-0b7f-4331-9a77-6594252cb33b.png)  
 
-- 店のシフトを誰でも閲覧できるのを防ぐため、アカウント登録は管理者の認証制
+- 店のシフトを誰でも閲覧できるのを防ぐため、アカウント登録は管理者の承認制
 ![スクリーンショット 2022-07-14 17 51 52](https://user-images.githubusercontent.com/66234583/180380212-237f835e-e99d-45ae-8959-e4b459a8a942.png)  
 ## その他特徴
 - LINE MessagingAPIを用いたアカウント連携とシフト前日のLINE通知機能([herokuデプロイ版](https://github.com/taku-y-9308/ShiftManagementApp-heroku)にて提供)
