@@ -5,6 +5,16 @@ document.addEventListener('DOMContentLoaded', function draw_calender() {
   let start_date = document.getElementById("start_date").textContent.replace(/"/g,'');
   let end_date = document.getElementById("end_date").textContent.replace(/"/g,'');
   console.log(end_date);
+
+  $.get('https://holidays-jp.github.io/api/v1/date.json',function (holidays_list){
+    /**eventData格納用に加工した祝日リストを取得/格納 */
+    holidays_list_for_eventData = get_holidays_list(holidays_list)
+    for(let i=0;i<holidays_list_for_eventData.length;i++){
+        calendar.addEvent(holidays_list_for_eventData[i])
+    }
+})
+
+
   var calendar = new FullCalendar.Calendar(calendarEl, {
     validRange: {
         start: start_date,
@@ -24,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function draw_calender() {
     navLinks: false, // can click day/week names to navigate views
     editable: false,
     selectable: false,
+    businessHours: true,
     eventBackgroundColor:'ff0000',
     contentHeight: 'auto',
     selectLongPressDelay:0,
