@@ -1,4 +1,5 @@
 import json,datetime,secrets,calendar
+import re
 from asyncio import events
 from curses import reset_prog_mode
 from email.policy import default
@@ -44,7 +45,11 @@ def Login(request):
                     return HttpResponseRedirect(next)
 
             else:
-                return HttpResponse("アカウントが有効ではありません")
+                error_message = "アカウントが有効化されていません。"
+                params = {
+                    "error_message":error_message
+                }
+                return render(request,'ShiftManagementApp/login.html',params)
         else:
             error_message = "ログインIDまたはパスワードが違います"
             params = {
@@ -334,7 +339,6 @@ def submitshift(request):
     end = datetime.datetime.strptime(end_str,'%Y-%m-%dT%H:%M')
     print(request.user.id)
     """
-    送信された日付が現在編集可能な場合
     編集可能期間または編集モードのときにシフトを編集できる
     """
     if (Judge_editable(start_str) == True or request.user.is_edit_mode == True):
@@ -375,6 +379,7 @@ def submitshift(request):
         })
         print("編集不可")
         return JsonResponse(response,safe=False)
+
 
 '''
 シフト提出可能期間かを判定
@@ -544,7 +549,8 @@ def editshift_ajax_delete_shiftdata(request):
         削除リクエストの判定
         編集可能期間もしくは、編集モードの時に削除リクエストを受け付ける
         """
-        if (Judge_editable(datas['start']) == True or request.user.is_edit_mode == True):
+        for_judge_date = f"{datas['date']}T{datas['start']}"
+        if (Judge_editable(for_judge_date) == True or request.user.is_edit_mode == True):
             #getは対象が存在しないと例外を返すため念の為try文にしている
             try:
                 Shift.objects.get(id=datas['id']).delete()
@@ -586,7 +592,159 @@ def edit_shift_publish_shift(request):
         )
     response = {}
     return JsonResponse(response)
+
+"""
+シフト一覧表表示用
+"""
+@login_required
+def shift_list(request):
+    if request.user.is_staff:
+        now = datetime.datetime.now()
+        last_month = datetime.date(now.year,now.month-1,1)
+        this_month = datetime.date(now.year,now.month,1)
+        next_month = datetime.date(now.year,now.month+1,1)
+        params= {
+            'last_month_for_value': last_month.strftime('%Y-%m-%d'),
+            'this_month_for_value': this_month.strftime('%Y-%m-%d'),
+            'next_month_for_value': next_month.strftime('%Y-%m-%d'),
+            'last_month_for_display': last_month.strftime('%Y-%m'),
+            'this_month_for_display': this_month.strftime('%Y-%m'),
+            'next_month_for_display': next_month.strftime('%Y-%m')
+        }
+        return render(request,'ShiftManagementApp/shift_list.html',params)
+    else:
+        return HttpResponse('アクセス権がありません')
+
+
+"""
+特定期間、かつ同じshop_idのシフトをすべてJSONで返す
+"""
+@login_required
+def shift_list_ajax(request):
+    if request.user.is_staff:
+        json_total_shift_stored = {} #全体のシフトが格納されたjson
+        tmp_arr2 = []
+
+        res = json.loads(request.body)
+        print(res["selected_month"])
+        dt = datetime.datetime.strptime(res["selected_month"],'%Y-%m-%d')
+        selected_month_beginning = dt
+        selected_month_end = datetime.date(dt.year,dt.month+1,1) - datetime.timedelta(days=1)
+
+        selected_month_beginning_str = selected_month_beginning.strftime('%Y-%m-%d')
+        selected_month_end_str = selected_month_end.strftime('%Y-%m-%d')
+
+
+        users= User.objects.filter(shop_id=request.user.shop_id)
+
+        #すべてのユーザーのシフトをjson_total_shift_storedに格納する
+        for user in users:
+            shift_list_each_private = {} #個人ごとのシフトリストを格納
+            tmp_arr = []
+            
+            """
+            dateオブジェクトでも文字列でもいけるが、どっちにする？
+            タイムゾーン考慮する
+            """
+            shifts = list(Shift.objects.filter(user=user,date__gte=selected_month_beginning,date__lte=selected_month_end).order_by('date'))
+            print(f'selected_month_beginning:{selected_month_beginning_str} selected_month_end:{selected_month_end_str}')
+            print(shifts)
+            shift_list_each_private['username'] = user.username
+
+            #特定個人のシフトをすべてshift_list_indivisualに格納する
+            for shift in shifts:
+                tmp_arr.append({
+                    "id": shift.id,
+                    "date": shift.date.isoformat(),
+                    "start": shift.begin.isoformat(),
+                    "end": shift.finish.isoformat()   
+                })
+            shift_list_each_private['shift_list'] = tmp_arr
+            tmp_arr2.append(shift_list_each_private)
+
+        
+        json_total_shift_stored['shift_lists'] = tmp_arr2
+
+        return JsonResponse(json_total_shift_stored)
+    else:
+        return HttpResponse('アクセス権がありません')
+
+"""
+印刷用ページ作成
+"""
+@login_required
+def shift_list_print(request):
+    if request.user.is_staff:
+        now = datetime.datetime.now()
+        last_month = datetime.date(now.year,now.month-1,1)
+        this_month = datetime.date(now.year,now.month,1)
+        next_month = datetime.date(now.year,now.month+1,1)
+        params= {
+            'last_month_for_value': last_month.strftime('%Y-%m-%d'),
+            'this_month_for_value': this_month.strftime('%Y-%m-%d'),
+            'next_month_for_value': next_month.strftime('%Y-%m-%d'),
+            'last_month_for_display': last_month.strftime('%Y-%m'),
+            'this_month_for_display': this_month.strftime('%Y-%m'),
+            'next_month_for_display': next_month.strftime('%Y-%m')
+        }
+        return render(request,'ShiftManagementApp/shift_list_print.html',params)
+    else:
+        return HttpResponse('アクセス権がありません')
+
+"""
+アカウント設定画面
+"""
+@login_required
+def account_setting(request):
+    if request.method == 'GET':
+        return render(request,'ShiftManagementApp/account_settings.html')
     
+    #POSTリクエストで実行
+    else :
+        #スタッフユーザーのみ実行可能        
+        if request.user.is_staff:
+            users = User.objects.filter(shop_id=request.user.shop_id).order_by('id')
+            user_list_private = {} #個人ごとのユーザーリストを格納
+            user_list = [] # return用の完全なユーザーリストを格納
+            for user in users:
+                user_list_private = {
+                    "user_id": user.id,
+                    "username": user.username,
+                    "default_position": user.default_position,
+                    "is_active": user.is_active,
+                    "is_edit_mode": user.is_edit_mode
+                }
+                user_list.append(user_list_private)
+            return JsonResponse(user_list,safe=False)
+            
+        #一般ユーザーの場合
+        else:
+           return JsonResponse({"error_mes":"アクセス権限がありません"})
+
+"""
+指定カラムのbool値を変更する
+"""
+@login_required
+def valid_invalid_change(request):
+    if request.method == 'POST':
+        if request.user.is_staff:
+            res = json.loads(request.body)
+            user_id = res['user_id']
+            target = res['target']
+            current_bool =  bool(res['current_bool'])
+            if target == 'is_active':
+                user = User.objects.filter(id=user_id).update(is_active=(not current_bool))
+            elif target == 'is_edit_mode':
+                user = User.objects.filter(id=user_id).update(is_edit_mode=(not current_bool))
+            else:
+                return JsonResponse({"error_mes":"targetが指定の値ではありません"})
+            
+            return JsonResponse({"status_code":0})
+    else:
+        raise Http404()
+
+
+
 """
 メール送信用
 """
